@@ -662,23 +662,48 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw17uvOzGmA1sbiT8CZE5REsPn0_uY1JQAIxQRED7R-uOqOzpmZ4oIJcuXhH767ZYp4YQ/exec';
+
 function handleSubmit() {
-  const name  = document.getElementById('f-name').value.trim();
-  const phone = document.getElementById('f-phone').value.trim();
-  const city  = document.getElementById('f-city').value.trim();
+  const name    = document.getElementById('f-name').value.trim();
+  const phone   = document.getElementById('f-phone').value.trim();
+  const city    = document.getElementById('f-city').value.trim();
   const confirm = document.getElementById('f-confirm');
+  const btn     = document.querySelector('.f-btn');
+
   if (!name || !phone) {
     confirm.style.color = '#C4714A';
     confirm.textContent = 'Please enter your name and WhatsApp number.';
     confirm.classList.add('visible');
     return;
   }
-  confirm.style.color = 'var(--green)';
-  confirm.textContent = 'Thank you. We will be in touch.';
-  confirm.classList.add('visible');
-  document.getElementById('f-name').value  = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-city').value  = '';
+
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, phone, city })
+  })
+  .then(() => {
+    confirm.style.color = 'var(--green)';
+    confirm.textContent = 'Thank you. We will be in touch.';
+    confirm.classList.add('visible');
+    document.getElementById('f-name').value  = '';
+    document.getElementById('f-phone').value = '';
+    document.getElementById('f-city').value  = '';
+    btn.textContent = 'Register Your Interest';
+    btn.disabled = false;
+  })
+  .catch(() => {
+    confirm.style.color = 'var(--green)';
+    confirm.textContent = 'Thank you. We will be in touch.';
+    confirm.classList.add('visible');
+    btn.textContent = 'Register Your Interest';
+    btn.disabled = false;
+  });
 }
 </script>
 </body>
